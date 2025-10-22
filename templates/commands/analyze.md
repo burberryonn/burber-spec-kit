@@ -1,76 +1,64 @@
 ---
-description: Выполнить кросс-анализ `spec.md`, `plan.md`, `tasks.md` и конституции после генерации задач.
+description: Review spec, plan, and tasks to confirm the feature is ready for delivery.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
----
-
-## Цель
-
-Проверить соответствие документов Spec→Plan→Tasks требованиям конституции (FSD + Vite + React + TypeScript + Mantine) и выявить расхождения до начала `/speckit.implement`.
+Use plain Markdown so every agent (Claude, Codex, Roo Code, etc.) can mirror the output.
 
 ---
 
-## Шаги
+## Objective
 
-1. **Получить контекст**:
-   - Запусти `{SCRIPT}` и получи `FEATURE_DIR`, `PLAN_PATH`, `TASKS_PATH`.
-   - Убедись, что существует `spec.md`, `plan.md`, `tasks.md`. При отсутствии — остановись.
-   - Найди конституцию: `memory/constitution.md`.
-
-2. **Загрузить документы**:
-   - `spec.md`: пользовательские истории, требования, FSD-карта, критерии успеха.
-   - `plan.md`: фазы, технический контекст (Mantine theme, TypeScript strict, CI), структура FSD.
-   - `tasks.md`: фазы, задачи, `[P]`, привязка к историям, DoD.
-   - `constitution.md`: инвариантные правила (нет Tailwind, TypeScript strict, Mantine-only UI).
-
-3. **Сверка**:
-   - Каждая история из `spec.md` имеет фазу и задачи в `tasks.md` (с указанием путей слоёв FSD).
-   - Фазы и зависимости `plan.md` отражены в `tasks.md`.
-   - Проверить, что задачи используют утверждённый стек (TypeScript, Mantine, i18next, Zustand/RTK) и не вводят запрещённые зависимости.
-   - Убедиться, что тесты и CI-задачи запланированы в финальной фазе (Vitest + lint + typecheck + build).
-   - Проверить наличие шагов по документации (`docs/architecture.md`, ADR, changelog).
-   - Сопоставить с конституцией: а11y, отсутствие Tailwind, Conventional Commits/CI требования.
-
-4. **Сформировать отчёт**:
-   - **Статус**: `OK` или `Нужно исправить`.
-   - **Обнаруженные несоответствия**: указать файл, раздел, суть проблемы.
-   - **Рекомендации**: какие команды/документы нужно обновить (например, повторить `/speckit.plan` или /tasks).
-   - **Риски**: потенциальные нарушения или незакрытые `NEEDS CLARIFICATION`.
-   - Отчёт текстовый, без изменения файлов.
+Correlate the specification, plan, and tasks to guarantee that scope, sequencing, and acceptance criteria remain consistent with the Spec Kit standards (FSD + Vite + React + TypeScript + Mantine).
 
 ---
 
-## Формат отчёта
+## Guidance
+
+1. **Run the helper script**  
+   - `{SCRIPT}` resolves `FEATURE_DIR`, `PLAN_PATH`, `TASKS_PATH`, and supporting metadata.  
+   - The script fails fast if required files are missing—stop and regenerate them with the matching commands first.
+
+2. **Validate source documents**  
+   - `spec.md`: confirm requirements, priorities, and FSD structure.  
+   - `plan.md`: ensure phases align with the spec and cover tooling expectations.  
+   - `tasks.md`: verify tasks map to plan phases and reference the same deliverables.  
+   - `.specify/memory/constitution.md`: check guardrails and non-negotiables.
+
+3. **Cross-check coverage**  
+   - Tasks must cover every spec deliverable and plan milestone.  
+  - Ensure CI gates (`lint`, `typecheck`, `build`, `test`) are part of the DoD.  
+   - Highlight gaps (missing UI states, Mantine theme updates, docs).
+
+4. **Summarise findings**  
+   - Status: `OK` or `Issues found`.  
+   - Detail mismatches (missing tasks, inconsistent phase, outdated guardrails).  
+   - Recommend next steps: e.g. update `plan.md` Phase 2, add tasks, refresh checklists.  
+   - Flag `NEEDS CLARIFICATION` items to feed back into specs.
+
+5. **Agent hand-off**  
+   - Output should be safe to store in `.roo/`, `.codex/`, or other agent memory stores without restructuring.  
+   - Call the relevant agent context script if consensus data changed.
+
+---
+
+## Expected Deliverable
 
 ```
-Статус: Нужно исправить
+Status: OK | Issues found
 
-- plan.md → tasks.md: отсутствует фаза для US2 (нужно доработать план).
-- tasks.md: найдена задача “Добавить Tailwind” — нарушает конституцию (Mantine only).
-- tasks.md: тестовые задачи находятся в фазе US1, а не в финальной Verify.
+Highlights:
+- [Observation]
+- ...
 
-Рекомендации:
-1. Обновить plan.md (Phase 4 для US2).
-2. Перегенерировать tasks.md после исправления плана.
-3. Перенести тесты в финальную фазу, заменить Tailwind на Mantine theme.
-
-Риски:
-- Возможное нарушение CI (нет задачи на `tsc --noEmit`).
+Next steps:
+1. [...]
 ```
-
----
-
-## Нельзя
-
-- Править `spec.md`, `plan.md`, `tasks.md` — только анализ.
-- Игнорировать нарушения конституции или стековых правил.
-- Завершать команду без явного отчёта даже при отсутствии проблем.

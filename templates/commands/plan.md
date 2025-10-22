@@ -1,5 +1,5 @@
 ---
-description: Сформировать план реализации под FSD + Vite + React + TypeScript + Mantine.
+description: Draft or refresh the feature plan for the FSD + Vite + React + TypeScript + Mantine stack.
 scripts:
   sh: scripts/bash/setup-plan.sh --json
   ps: scripts/powershell/setup-plan.ps1 -Json
@@ -8,69 +8,65 @@ agent_scripts:
   ps: scripts/powershell/update-agent-context.ps1 -AgentType __AGENT__
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
-Если вход пустой — сообщи об ошибке.
+If you need additional context, ask for it before rewriting the plan.
 
 ---
 
-## Алгоритм
+## Responsibilities
 
-1. **Запусти `{SCRIPT}`** из корня репозитория (один раз). Разбери JSON и получи:
-   - `FEATURE_SPEC`, `FEATURE_DIR`, `PLAN_TEMPLATE`, `BRANCH`;
-   - абсолютные пути ко всем артефактам.  
-   Ошибка → остановись.
+1. **Bootstrap metadata**  
+   - `{SCRIPT}` returns JSON containing `FEATURE_SPEC`, `FEATURE_DIR`, `PLAN_TEMPLATE`, `BRANCH`, and other pointers.
+   - Abort if required files are missing; generate them (e.g. `/speckit.specify`) first.
 
-2. **Загрузи исходные данные**:
-   - `templates/plan-template.md`;
-   - `specs/.../spec.md`;
-   - `.specify/memory/constitution.md`.
+2. **Collect supporting material**  
+   - `templates/plan-template.md` – structure and sections.  
+   - `specs/.../spec.md` – requirements and FSD expectations.  
+   - `.specify/memory/constitution.md` – global guardrails.
 
-3. **Получить свежую документацию через context7**:
-   - JSON-RPC `initialize`, затем `tools/list`.
-   - Последовательно запроси: `vite`, `react`, `typescript`, `mantine`, `react-router`, `zustand` (или Redux Toolkit).
-   - Для каждой библиотеки: `resolve-library-id` → `get-library-docs` (темы: “setup”, “best practices”, “upgrading”).
-   - Сохрани версии и ссылки в разделе “Источники и ссылки”.  
-   Если ключ недействителен — зафиксируй проблему и продолжай с пометкой.
+3. **Align with the stack**  
+   - Assure Vite + React + TS (strict) + Mantine + Zustand + i18next remain the baseline.  
+   - Call out Mantine theme work, routing, data flows, and CI gates.
 
-4. **Сформировать технический контекст**:
-   - Vite + React + TypeScript (strict) + Mantine (Emotion), Zustand (по умолчанию).
-   - FSD-уровни: `app`, `shared`, `entities`, `features`, `widgets`, `pages`, `processes`.
-   - Паттерны: Mantine theme, i18n (i18next), routing (react-router).
-   - Отметь требования по линтингу (ESLint + Prettier) и CI (lint/typecheck/build).
+4. **Outline phases and deliverables**  
+   - Phase 0 Research → Phase 1 Design → Phase 2 Tasks → Phase 3 Implementation (extend if needed).  
+   - For each phase, list objectives, dependencies, and verification.
 
-5. **Заполнить план по фазам**:
-   - Phase 0 — Research (закрыть `NEEDS CLARIFICATION`, собрать выдержки из context7, оформить ADR-заметки).
-   - Phase 1 — Design (структура FSD, `vite.config.ts`, `tsconfig.*`, Mantine theme, i18n, Zustand store).
-   - Phase 2 — Tasks (правила генерации `tasks.md`, контроль DoD, подготовка CI).
-   - Phase 3+ — Implementation/Testing (итерации по историям, финальный Verify, тесты в конце).
+5. **Keep the plan agent-neutral**  
+   - Use plain Markdown: headings, tables, checklists are fine.  
+   - Mention how to sync context scripts for agents: run `update-agent-context` with `__AGENT__` set to `claude`, `codex`, `roo`, etc.  
+   - Avoid proprietary formatting that would break IDE-based assistants.
 
-6. **Обновить структуру проекта**:
-   - опиши директории FSD и публичные контракты (index.ts).
-   - отметь алиасы (`vite-tsconfig-paths`), Mantine theme расположение, провайдеры в `app/`.
-   - зафиксируй риски и нарушения конституции (таблица).
+6. **Highlight follow-ups**  
+   - Document `NEEDS CLARIFICATION` items.  
+   - Reference ADRs, docs, or checklists to be updated.  
+   - Confirm DoD (lint, typecheck, build, preview, tests, accessibility).
 
-7. **Сохранить результат** в `plan.md`:
-   - заполни шаблон полностью, текст на русском;
-   - прилепи ссылки на документацию и список рисков/вопросов.
-
-8. **Синхронизировать контекст агентов**:
-   - выполни `{AGENT_SCRIPT}` с `__AGENT__ = roo` после записи плана;
-   - убедись, что `.roo/` содержит обновлённые данные о стеке.
-
-9. **Отчёт**:
-   - путь к `plan.md` и созданным артефактам (`research.md`, `data-model.md`, …);
-   - список ссылок из context7;
-   - открытые вопросы/риски.
+7. **Post-plan actions**  
+   - Encourage running the agent context script for the assistant in use (`claude`, `gemini`, `cursor`, `qwen`, `opencode`, `codex`, `windsurf`, `kilocode`, `auggie`, `roo`, `q`).  
+   - Remind the team to share the plan with stakeholders before implementation.
 
 ---
 
-## Нельзя
+## Output Expectations
 
-- Изменять файлы вне каталога фичи.
-- Игнорировать конституцию и требования стека (TypeScript strict, Mantine, отсутствие Tailwind).
-- Оминать запросы к context7 при наличии ключа (ошибку нужно явно отметить).
+```
+# Feature Plan: ...
+
+## Overview
+- ...
+
+## Stack Expectations
+- ...
+
+## Phases
+1. ...
+
+## Acceptance Matrix
+| Deliverable | Status | Notes | Verification |
+```

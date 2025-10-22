@@ -1,48 +1,63 @@
 ---
-description: Сформировать или обновить конституцию проекта под стек FSD + Vite + React + TypeScript + Mantine.
+description: Refresh the project constitution that encodes non-negotiable delivery principles.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
-Если указаны специфические приоритеты (например, безопасность, скорость, UX) — учитывай при формировании правил.
+---
+
+## Goal
+
+Keep `.specify/memory/constitution.md` up to date so every agent (Claude, Codex, Roo Code, etc.) shares the same guardrails about architecture, tooling, and delivery practices.
 
 ---
 
-## Назначение
+## Steps
 
-Конституция фиксирует неизменяемые принципы разработки: стек, архитектура, качество, процесс. Все последующие команды обязаны ей следовать.
+1. **Load context**  
+   - `{SCRIPT}` locates `FEATURE_DIR`.  
+   - If `.specify/memory/constitution.md` exists, read and diff it; otherwise seed it from `templates/memory/constitution.md`.
+
+2. **Capture foundational rules**  
+   Include:
+   - Stack: Vite + React + TypeScript (strict) + Mantine 7+, Zustand preferred, i18next.  
+   - Layout: FSD structure (`app`, `shared`, `entities`, `features`, `widgets`, `pages`, `processes`).  
+   - Tooling: ESLint, Prettier, Vitest, GitHub Actions (lint/typecheck/build).  
+   - Constraints: No Tailwind unless justified, favour Mantine Emotion, follow Conventional Commits.
+
+3. **Describe delivery workflow**  
+   - Sequential loop: Specify → Plan → Tasks → Implement → Verify → Log → Release.  
+   - Expectation for ADRs, docs, and changelog updates.  
+   - Testing and accessibility requirements.
+
+4. **Call out manual sections**  
+   - Keep a clearly marked `Manual additions` area for team-specific norms.  
+   - Encourage updates whenever new lessons are learned.
+
+5. **Validate agent compatibility**  
+   - Markdown should stay simple, no agent-specific formatting.  
+   - Mention that context scripts can sync `.roo/`, `.codex/`, `.claude/`, etc., when the constitution changes.
 
 ---
 
-## Шаги
+## Output Expectations
 
-1. Запусти `{SCRIPT}` и получи `FEATURE_DIR`. Если файл `memory/constitution.md` существует — загрузи для обновления, иначе используй `templates/memory/constitution.md` как основу.
+```
+# Project Constitution
 
-2. Сформируй разделы:
-   - **Базовые принципы**: FSD, Vite + React + TypeScript strict, Mantine 7+, Zustand (или RTK), i18next, отсутствие Tailwind.
-   - **Технологический стек**: конфигурация Vite (SWC), ESLint + Prettier, GitHub Actions (lint/typecheck/build), Vitest + RTL, Conventional Commits.
-   - **Архитектура FSD**: описание слоёв (`app`, `shared`, `entities`, `features`, `widgets`, `pages`, `processes`), требования к публичным API (index.ts), алиасы (`vite-tsconfig-paths`).
-   - **Процесс Spec-Kit**: порядок `/specify → /plan → /task → /implement → /verify → /document → /release`, использование context7 и sequential-thinking.
-   - **Документация и ADR**: обязательность `/docs/architecture.md`, `/docs/adr/*`, `/docs/roadmap.md`, `/docs/changelog.md`.
-   - **Правила изменения конституции**: кто и как может вносить правки (например, ADR + review).
+## Stack Guardrails
+- ...
 
-3. Обнови раздел “Manual additions” только если пользователь предоставил дополнительные правила (не затирай существующие комментарии).
+## Delivery Workflow
+- ...
 
-4. Сохрани документ в `memory/constitution.md` и сообщи:
-   - количество принципов/секций;
-   - что требуется для утверждения (например, “пройти ревью команды”, “добавить ссылку в README”).
-
----
-
-## Нельзя
-
-- Удалять базовые принципы без явного указания пользователя.
-- Добавлять стековые исключения (Tailwind, CSS-in-JS вне Mantine Emotion).
-- Противоречить Spec-Kit workflow или требованиям CI/QA.
+## Manual additions
+<!-- leave placeholders for teams -->
+```

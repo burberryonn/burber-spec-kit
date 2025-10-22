@@ -1,66 +1,71 @@
 ---
-description: Создать или обновить спецификацию под стек FSD + Vite + React + TypeScript + Mantine.
+description: Create or refresh the specification for an FSD feature built with Vite + React + TypeScript + Mantine.
 scripts:
   sh: scripts/bash/create-new-feature.sh --json "{ARGS}"
   ps: scripts/powershell/create-new-feature.ps1 -Json "{ARGS}"
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
-Если вход пустой — сообщи об ошибке и остановись.
+---
+
+## Objective
+
+Populate `specs/[feature]/spec.md` with a complete description of the feature, ready for planning and task breakdown. The output must remain agent-agnostic so Codex, Roo Code, Claude, and others can reuse it.
 
 ---
 
-## Алгоритм
+## Process
 
-1. **Запусти скрипт** `{SCRIPT}` из корня репозитория *один раз*. Разбери JSON и сохрани:
-   - `BRANCH_NAME`
-   - `SPEC_FILE`
-   - абсолютный путь к каталогу фичи  
-   Ошибка или пустые поля → остановись.
+1. **Execute the bootstrap script**  
+   - `{SCRIPT}` produces JSON containing `BRANCH_NAME`, `SPEC_FILE`, and directory paths.  
+   - Abort if scaffolding fails; resolve missing directories or rerun the CLI.
 
-2. **Загрузить шаблон** `templates/spec-template.md` и следовать его структуре (всё на русском языке).
+2. **Apply the template**  
+   - Use `templates/spec-template.md` as the baseline structure.  
+   - Fill in placeholders with concrete details from discovery/research.  
+   - Keep the stack defaults unless there is an approved exception.
 
-3. **Разобрать запрос пользователя**:
-   - Выдели акторов, пользовательские цели, доменные сущности.
-   - Учитывай новый стек: Vite + React + TypeScript (strict), Mantine 7+, Zustand (по умолчанию), react-router 6.30+, i18next.
-   - Используй метки `[NEEDS CLARIFICATION: …]` только для критичных вопросов (максимум 3).
+3. **Document scope**  
+   - Functional requirements grouped by priority/phases.  
+   - Non-functional requirements (performance, accessibility, compliance).  
+   - FSD alignment: which directories change, shared components reused, new ones introduced.
 
-4. **Заполнить разделы**:
-   - Пользовательские истории (P1, P2, …) + критерии приёмки.
-   - Требования: функциональные, нефункциональные (перфоманс, a11y), архитектурные ограничения (FSD-слои, Mantine theme, отсутствие Tailwind).
-   - FSD-карта: какие страницы, widgets, features, entities потребуются.
-   - Критерии успеха: измеримые метрики (business & UX).
-   - Ассумпции, ключевые сущности, открытые вопросы.
+4. **Capture data contracts and dependencies**  
+   - Entities, APIs, events, or external services.  
+   - Validation rules and error handling expectations.
 
-5. **Сформировать `spec.md`**:
-   - Заполни все placeholders, сохрани порядок заголовков и комментарии из шаблона.
-   - Текст — на русском, без готового кода.
-   - Не меняй другие файлы.
+5. **Log success metrics**  
+   - Define measurable outcomes with owners.  
+   - Note follow-up ADRs or docs to create.
 
-6. **Создать чеклист качества** `FEATURE_DIR/checklists/requirements.md` по структуре `templates/checklist-template.md`, добавив пункты:
-   - требования тестируемы и согласуются с FSD-структурой;
-   - критерии успеха измеримы;
-   - отражены ограничения по стеку (TypeScript strict, Mantine theme, отсутствие Tailwind);
-   - все `[NEEDS CLARIFICATION]` перечислены.
+6. **List open questions**  
+   - Use `NEEDS CLARIFICATION` markers with IDs (`Q1`, `Q2`, ...).  
+   - Assign owners and next steps.
 
-7. **Проверить спецификацию**:
-   - Отметь выполненные пункты `[x]`, проблемные — оставь `[ ]` и опиши, что нужно исправить.
-   - Если остались незакрытые пункты, сообщи об этом пользователю.
-
-8. **Отчёт**:
-   - Укажи ветку и путь к `spec.md`.
-   - Сколько пунктов чеклиста закрыто.
-   - Какие вопросы/риски требуют ответа.
+7. **Quality check**  
+   - Ensure Markdown headings, tables, and lists render cleanly across agents.  
+   - Call out next commands (`/speckit.plan`, `/speckit.tasks`) once the spec is approved.
 
 ---
 
-## Нельзя
+## Output Example
 
-- Генерировать HTML/CSS/JS или начинать архитектурные решения FSD на этом шаге.
-- Игнорировать конституцию проекта или базовый стек (Vite + React + TS + Mantine).
-- Менять файлы вне `spec.md` и чеклиста.
+```
+# Specification For: Checkout Flow
+...
+## Functional Requirements
+- FR-001: ...
+
+## Open Questions
+| ID | Question | Owner | Next Step |
+|----|----------|-------|-----------|
+
+Next actions:
+1. Review with stakeholders.
+2. Generate plan via /speckit.plan.
+```

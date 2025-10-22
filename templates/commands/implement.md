@@ -1,59 +1,63 @@
 ---
-description: Выполнить tasks.md, сохраняя архитектуру FSD и стек Vite + React + TypeScript + Mantine.
+description: Execute tasks.md and deliver the feature using the agreed FSD stack.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json --require-tasks --include-tasks
   ps: scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks
 ---
 
-## Подготовка
+## Prompt
 
-1. Запусти `{SCRIPT}` из корня репозитория. Получи `FEATURE_DIR`, `PLAN_PATH`, `TASKS_PATH` и список доступных документов. Если `tasks.md` отсутствует — остановись и предложи запустить `/speckit.tasks`.
-2. Проверь чеклисты в `FEATURE_DIR/checklists/`:
-   - посчитай `[ ]` и `[x]`;
-   - если есть незакрытые пункты — покажи таблицу и спроси, можно ли продолжать.
-3. Загрузить контекст: `plan.md`, `tasks.md`, (при наличии) `research.md`, `data-model.md`, `contracts/`, `quickstart.md`.
+```text
+$ARGUMENTS
+```
 
 ---
 
-## Правила исполнения
+## Mission
 
-- Выполняй задачи строго по фазам и зависимостям из `tasks.md`.
-- `[P]` означает, что задачи можно вести параллельно (разные файлы).
-- Соблюдай границы FSD: импорт “снизу вверх” (`shared → entities → features → widgets → pages → app`).
-- Стек обязателен: Vite + React + TypeScript (strict) + Mantine (Emotion), Zustand (или другой утверждённый стор), i18next.
-- Никакого Tailwind, никаких сторонних CSS-фреймворков.
-- Финальные проверки (`tsc --noEmit`, `eslint`, `prettier`, `vitest`, `vite build`, `vite preview`) выполняются в заключительной фазе.
-- После завершения задачи отмечай её `[x]` в `tasks.md`.
+Drive implementation in the sequence defined by `tasks.md`, keeping alignment with `plan.md`, `spec.md`, and Spec Kit guardrails. Output should remain agent-friendly (Codex, Roo Code, Claude, etc.).
 
 ---
 
-## Фазы
+## Checklist
 
-1. **Инициализация** — структура проекта, конфигурация Vite/TS, MantineProvider, i18n, Zustand.
-2. **Инфраструктура** — общие сущности, shared/ui, тема Mantine, роутинг, ErrorBoundary.
-3. **Пользовательские истории** — реализуй по приоритету (P1 → ...), сохраняя независимость историй.
-4. **Завершение и тесты** — документация, `npm run lint`, `npm run typecheck`, `npm run build`, `npm run preview`, запуск Vitest, обновление чеклистов.
+1. **Load execution context**  
+   - `{SCRIPT}` populates `FEATURE_DIR`, `PLAN_PATH`, `TASKS_PATH`, and relevant metadata.  
+   - If `tasks.md` is missing or outdated, regenerate it before proceeding.
 
-Если задача блокируется `NEEDS CLARIFICATION`, остановись, запроси уточнение и обнови соответствующие документы.
+2. **Re-read supporting docs**  
+   - `plan.md`: phases, priorities, CI commitments.  
+   - `tasks.md`: DoD, owners, dependencies.  
+   - Optional: `research.md`, `data-model.md`, `contracts/`, `quickstart.md`.
+
+3. **Follow the task flow**  
+   - Work from foundations → composition → release slices.  
+   - Honour `[P]` follow-ups and `NEEDS CLARIFICATION` markers.  
+   - Keep implementation within the FSD directories and Mantine styling conventions.
+
+4. **Maintain quality gates**  
+   - Run `npm run lint`, `npm run typecheck`, `npm run build`, `npm run preview`, and relevant Vitest suites.  
+   - Update checklists, docs, ADRs, and changelog entries as tasks close.  
+   - Capture verification evidence inline (test output, screenshots, links).
+
+5. **Agent co-operation**  
+   - Surface progress in Markdown or concise tables so other assistants can continue the work.  
+   - Trigger the context update script for the chosen agent if shared memory must be refreshed.
 
 ---
 
-## Контроль качества
+## Suggested Output
 
-- После каждой фазы перечисли изменённые файлы и закрытые задачи.
-- Убедись, что UI реализован через Mantine (shared/ui, shared/config/theme).
-- Документируй отклонения от плана с причинами и ссылками на требования.
-- В конце проверь, что все задачи помечены `[x]`, чеклисты актуальны, артефакты `plan.md`/`tasks.md` синхронизированы.
+```
+## Progress
+- [x] T001 ...
+- [ ] T002 ...
 
----
+## Verifications
+- lint ✅
+- typecheck ✅
+- build ⏳ (blocked by ...)
 
-## Финальный отчёт
-
-Укажи:
-1. Выполненные проверки (`tsc`, `eslint`, `prettier`, `vitest`, `build`, `preview`).
-2. Состояние чеклистов (сколько пунктов закрыто / осталось).
-3. Обновлённые документы (docs, ADR, changelog).
-4. Ссылки на материалы context7 (если использовал).
-5. Оставшиеся риски или рекомендации для следующей итерации.
-
-При любой критической ошибке (не проходит build, падают тесты) остановись и запроси дальнейшие инструкции.
+## Notes
+- Follow-up on ...
+```

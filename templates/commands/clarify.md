@@ -1,55 +1,57 @@
 ---
-description: Сформировать список уточняющих вопросов перед планированием под стек FSD + Vite + React + TypeScript + Mantine.
+description: Identify open questions or missing details in the specification and plan.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
-Если пользователь дал дополнительные указания — учитывай при формулировании вопросов.
+---
+
+## Purpose
+
+Before implementation, surface ambiguities so they can be resolved in `spec.md`, `plan.md`, or supporting research. This command is safe to use with any agent (Claude, Codex, Roo Code, etc.) because it relies on plain Markdown output.
 
 ---
 
-## Назначение
+## Workflow
 
-Выяснить критичные неопределённости после `/speckit.specify` (и, при необходимости, после `/speckit.plan`), чтобы FSD-структура и стек были однозначны.
+1. **Gather inputs**  
+   - `{SCRIPT}` loads `FEATURE_DIR`, `spec.md`, and (if present) `plan.md`, `research.md`.  
+   - Stop if the spec is missing—run `/speckit.specify` first.
 
----
+2. **Scan critical sections**  
+   - Requirements marked `NEEDS CLARIFICATION`.  
+   - Acceptance criteria lacking measurable outcomes.  
+   - Missing Mantine component details, routing, state management decisions.  
+   - Incomplete DoD items (tests, docs, CI, accessibility).
 
-## Шаги
+3. **Record questions**  
+   - Use a table or bullet list with IDs (`Q1`, `Q2`, ...).  
+   - Include owner, proposed resolution path, and links to context.  
+   - Suggest alternatives when possible to speed up decisions.
 
-1. Запусти `{SCRIPT}`. Определи `FEATURE_DIR`. Убедись, что `spec.md` существует. При наличии `plan.md`, `research.md` — загрузи их.
-
-2. Проанализируй `spec.md`:
-   - Найди истории с `NEEDS CLARIFICATION`.
-   - Проверь, хватает ли данных для FSD-карты, Mantine UI, i18n, state management.
-
-3. Если `plan.md` уже создан:
-   - Сверь технический контекст (TypeScript strict, Mantine theme, CI) с требованиями.
-   - Найди места, где решения зависят от неподтверждённых факторов (API, дизайн, данные).
-
-4. Сформируй вопросы:
-   - До 5 пунктов за раз.
-   - Каждый вопрос короткий, с контекстом и предложенными вариантами (если применимо).
-   - Приоритизируй: архитектура → данные → UX → процессы.
-
-5. Выведи таблицу:
-
-| ID | Категория | Вопрос | Предлагаемые варианты |
-|----|-----------|--------|-----------------------|
-| Q1 | Архитектура | … | A) … / B) … |
-
-6. Заверши инструкцией для пользователя: ответить формата `Q1: вариант` или дать свободный комментарий.
+4. **Echo back recommended updates**  
+   - Which files need edits (`spec.md`, `plan.md`, ADR, roadmap).  
+   - Which agent workflows should re-run after clarification (e.g. `/speckit.plan`, context scripts).  
+   - Note any risk if left unresolved.
 
 ---
 
-## Нельзя
+## Output Skeleton
 
-- Предлагать опции, нарушающие конституцию (например, подключить Tailwind).
-- Генерировать задачи/план или править документы.
-- Игнорировать отмеченные `NEEDS CLARIFICATION` в спецификации или планах.
+```
+Open Questions:
+| ID | Area | Question | Owner | Next Step |
+|----|------|----------|-------|----------|
+| Q1 | UX   | ...      | ...   | ...      |
+
+Actions:
+- Update spec.md section ...
+- Ping design for ...
+```

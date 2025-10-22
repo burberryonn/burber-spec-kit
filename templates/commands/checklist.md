@@ -1,47 +1,62 @@
 ---
-description: Сформировать контрольный чеклист перед `/speckit.implement` или перед релизом.
+description: Prepare or update readiness checklists before running `/speckit.implement` or release reviews.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
 ```
 
-Если нужно конкретный тип чеклиста (QA, UX, Release) — укажи в запросе.
+---
+
+## Why
+
+Checklists give the team an auditable trail before we switch to execution. They must stay aligned with the spec, plan, tasks, and broader governance rules.
 
 ---
 
-## Алгоритм
+## Steps
 
-1. Запусти `{SCRIPT}` и определи `FEATURE_DIR`, доступные артефакты (`spec.md`, `plan.md`, `tasks.md`, `research.md`, `quickstart.md`).
-2. Выбери тип чеклиста:
-   - если пользователь указал — используй его;
-   - иначе `release-ready`.
-3. На основе `templates/checklist-template.md` создай файл `FEATURE_DIR/checklists/<type>.md`, заполнив разделы:
-   - **Артефакты** — актуальность спецификации, плана, задач, ADR, roadmap.
-   - **Архитектура/код** — соблюдение FSD-структуры, TypeScript strict, Mantine theme, отсутствие Tailwind.
-   - **Тесты и CI** — наличие скриптов `lint`, `typecheck`, `build`, `vitest`, GitHub Actions.
-   - **Документация и риски** — ADR, changelog, незакрытые `NEEDS CLARIFICATION`.
-4. Для каждой категории добавь 3–5 пунктов вида `- [ ] ...`. Если пункт уже выполнен — `- [x] ...`.
-5. Сохранённый файл должен содержать ссылку на `spec.md` и краткое описание цели.
+1. **Collect context**  
+   `{SCRIPT}` resolves `FEATURE_DIR` plus paths to `spec.md`, `plan.md`, `tasks.md`, `research.md`, and `quickstart.md`.
+
+2. **Choose checklist types**  
+   - Delivery / Release readiness  
+   - QA validation  
+   - UX review  
+   - Security / Compliance  
+   Create as many markdown files under `FEATURE_DIR/checklists/` as needed (use `templates/checklist-template.md`).
+
+3. **Author checklist items**  
+   - Make each item actionable and measurable.  
+   - Reference evidence (PR, test run, screenshot) inline.  
+   - Include gates for docs, CI, accessibility, and ADR updates.
+
+4. **Review for alignment**  
+   - Confirm the checklist mirrors priorities and DoD from `plan.md` and `tasks.md`.  
+   - Ensure `NEEDS CLARIFICATION` items feed back into specs.  
+   - Note which roles must sign off (QA, Design, Security).
+
+5. **Agent compatibility**  
+   - Keep the Markdown plain; any agent (Claude, Codex, Roo Code, etc.) can toggle `[x]` vs `[ ]`.  
+   - After edits, run the relevant agent context script if shared state must be refreshed.
 
 ---
 
-## Отчёт
+## Output Template
 
-Укажи:
-1. Путь к созданному чеклисту.
-2. Количество пунктов и сколько закрыто `[x]`.
-3. Какие пункты остаются открытыми и кто ответственен.
+```
+# Checklist <type>: <feature>
 
----
+- [ ] Item
+- [ ] Item
+- [ ] Item
 
-## Нельзя
-
-- Изменять `spec.md`, `plan.md`, `tasks.md`.
-- Добавлять проверки, противоречащие стеку (например, требования к Tailwind).
-- Оставлять чеклист без привязки к `spec.md` или без ясной цели.
+Notes:
+- Evidence / links
+- Follow-ups
+```

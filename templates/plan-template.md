@@ -1,126 +1,123 @@
-# План реализации: [FEATURE NAME]
+# Feature Plan: [FEATURE NAME]
 
-**Ветка**: `[###-feature-name]` | **Дата**: [DATE] | **Спецификация**: [link]  
-**Артефакт**: `/specs/[###-feature-name]/spec.md`  
-**Исполнитель**: Roo Code (перед стартом перечитай `.specify/memory/constitution.md`).
-
----
-
-## Резюме
-
-[Кратко опиши цель фичи, основные ограничения и ожидаемый результат. Укажи, что стек: Vite + React + TypeScript + Mantine + Zustand + i18next.]
+**Slug**: `[###-feature-name]` | **Date**: [DATE] | **Ticket**: [link]  
+**Spec**: `/specs/[###-feature-name]/spec.md`  
+**Agent Workflow**: Compatible with Specify CLI integrations for Claude, Gemini, Copilot, Cursor, Qwen, opencode, Codex, Roo Code, Windsurf, Kilocode, Auggie, and Amazon Q. After saving updates run the agent context script for your assistant if it caches guidance.
 
 ---
 
-## Технический контекст
+## Overview
 
-- **Бандлер и компиляция**: Vite + SWC, TypeScript `"strict": true`, `"noUncheckedIndexedAccess": true`.
-- **UI**: Mantine 7+ (`@mantine/core`, `@mantine/hooks`, `@mantine/form`, `@mantine/modals`), Emotion.
-- **State**: Zustand (по умолчанию) или Redux Toolkit (если требуется).
-- **Маршрутизация**: React Router v6.30+.
-- **Формы**: `@mantine/form`.
-- **i18n**: `i18next`, `react-i18next`.
-- **Нефункциональные цели**: перформанс, a11y (ARIA), минимальное число зависимостей, CI (lint/typecheck/build).
-- **Запрещено**: Tailwind, сторонние CSS-фреймворки, CSS-in-JS вне Mantine Emotion.
+[Summarise the user problem, the desired outcome, and how this feature fits the roadmap. Keep the scope tight and reference the core stack: Vite + React + TypeScript + Mantine + Zustand + i18next.]
 
 ---
 
-## Проверка конституции
+## Stack Expectations
 
-*Проверить до Phase 0 и после итогового дизайна.*
-
-- Соблюдается ли FSD-структура и стек?
-- Подготовлен ли Mantine theme, глобальные провайдеры, алиасы?
-- Учтены ли требования TypeScript strict, ESLint + Prettier, Conventional Commits?
-- Запланированы ли ADR и документация?
-
-Зафиксируй нарушения, причину и план устранения.
+- **Tooling & Build**: Vite + SWC, TypeScript `"strict": true`, `"noUncheckedIndexedAccess": true`.
+- **UI**: Mantine 7+ (`@mantine/core`, `@mantine/hooks`, `@mantine/form`, `@mantine/modals`) using Emotion styling.
+- **State**: Zustand as the default choice; add Redux Toolkit only if orchestration across slices is required.
+- **Routing**: React Router v6.30+.
+- **Forms**: `@mantine/form`.
+- **i18n**: `i18next` + `react-i18next`.
+- **Quality Gates**: ESLint, Prettier, Vitest + Testing Library, CI jobs (lint/typecheck/build).
+- **Agent Notes**: Keep Markdown plain so that CLI and IDE agents (including Codex and Roo Code) can parse links, code fences, and checklists consistently.
 
 ---
 
-## Структура артефактов
+## Discovery Checklist
 
-### Каталог фичи
+- Do we understand the user journey and the FSD slice impact?
+- Are Mantine theme requirements, component variants, and accessibility needs documented?
+- Are TypeScript strictness, ESLint, Prettier, and Conventional Commits affirmed?
+- Do we need new ADRs or updates to architecture docs?
+- Any integration risks (APIs, data migrations, third-party services)?
+
+Capture open questions in the backlog or mark them `NEEDS CLARIFICATION`.
+
+---
+
+## Deliverables
+
+### Spec Directory Layout
 
 ```
 specs/[###-feature-name]/
-├── plan.md
-├── research.md
-├── data-model.md
-├── quickstart.md
-├── contracts/
-└── tasks.md
+├─ plan.md
+├─ research.md
+├─ data-model.md
+├─ quickstart.md
+├─ contracts/
+└─ tasks.md
 ```
 
-### Исходный код
+### Source Layout (FSD)
 
 ```
 src/
-├── app/             # providers, routing, MantineProvider, ErrorBoundary
-├── shared/          # ui, lib, api, config, types, assets
-├── entities/        # доменные модели (User, Session…)
-├── features/        # пользовательские действия (auth/login, theme/toggle…)
-├── widgets/         # композиции из entities + features
-├── pages/           # маршрутизируемые страницы
-└── processes/       # (опционально) сквозные потоки
-
-docs/                # архитектура, ADR, roadmap, changelog
+├─ app/             # providers, routing, MantineProvider, ErrorBoundary
+├─ shared/          # ui, lib, api, config, types, assets
+├─ entities/        # domain primitives (User, Session, ...)
+├─ features/        # user-facing capabilities (auth/login, theme/toggle, ...)
+├─ widgets/         # compositions of entities + features
+├─ pages/           # routed views
+└─ processes/       # cross-cutting flows (optional)
 ```
 
-**Отклонения**: [Если структура отличается — обоснуй].
+**Notes**: Call out deviations from the standard layout or shared utilities that must be reused.
 
 ---
 
-## Фазы
+## Phases
 
-1. **Phase 0 — Research**
-   - Закрыть `NEEDS CLARIFICATION`, оформить `research.md`.
-   - Сбор ссылок из context7 по Vite, React, TypeScript, Mantine, React Router, Zustand/RTK.
-   - Формирование ADR для ключевых решений.
+1. **Phase 0 – Research**
+   - Capture blockers as `NEEDS CLARIFICATION`, expand `research.md`.
+   - Sync with context agents as needed (Roo Code, Codex, etc.).
+   - Draft ADRs for architectural or tooling decisions.
 
-2. **Phase 1 — Design**
-   - Настройка `vite.config.ts`, `tsconfig.*`, ESLint, Prettier, Vitest, GitHub Actions.
-   - Описание Mantine theme (`shared/config/theme.ts`), UI-обёртки (`shared/ui`).
-   - Настройка провайдеров (MantineProvider, Router, i18n, Zustand).
-   - Обновление `quickstart.md`, ADR, roadmap.
+2. **Phase 1 – Design**
+   - Finalise Vite config, TypeScript settings, ESLint, Prettier, Vitest, GitHub Actions.
+   - Define Mantine theme tokens, shared UI primitives, and app providers.
+   - Record assumptions in `quickstart.md`, ADRs, and roadmap.
 
-3. **Phase 2 — Tasks**
-   - Генерация `tasks.md` с фазами и зависимостями.
-   - Контроль DoD: TypeScript, ESLint, Prettier, CI, docs.
-   - Подготовка к sequential-thinking (Analyze → Plan → Do → Verify → Log).
+3. **Phase 2 – Tasks**
+   - Break down work in `tasks.md` with priorities (`[P]`), owners, and DoD.
+   - Ensure CI, docs, and verification steps are part of every deliverable.
 
-4. **Phase 3 — Implementation**
-   - Итеративная реализация user story (P1 → …).
-   - Маленькие коммиты, Conventional Commits, обновление docs.
-   - Финальная Verify (lint/typecheck/build/preview/tests).
+4. **Phase 3 – Implementation**
+   - Implement user stories per priority; keep commits scoped and traceable.
+   - Update docs, ADRs, changelog, and mark checklists.
+   - Run verification commands after every meaningful chunk.
 
 ---
 
-## Контроль сложности и рисков
+## Acceptance Matrix
 
-| Нарушение / риск | Причина | План снижения | Пункт конституции |
-|------------------|---------|---------------|-------------------|
-| … | … | … | … |
-
----
-
-## План тестирования (Verify)
-
-- `npm run lint`, `npm run typecheck`, `npm run build`, `npm run preview`.
-- Vitest + Testing Library — smoke-кейсы критичных фич.
-- Проверка a11y (Mantine, aria-*).
-- Обновление docs (architecture, ADR, changelog).
+| Deliverable / Owner | Status | Notes | Verification |
+|---------------------|--------|-------|--------------|
+| :                   | :      | :     | :            |
 
 ---
 
-## Источники и ссылки
+## Verification
 
-- context7:
-  - Vite — [ID / ссылка]
-  - React — [ID / ссылка]
-  - TypeScript — [ID / ссылка]
-  - Mantine — [ID / ссылка]
-  - React Router — [ID / ссылка]
-  - Zustand/Redux Toolkit — [ID / ссылка]
-- Дополнительные материалы: […]
-- Открытые вопросы: [что требуется подтверждения].
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `npm run preview`
+- `npm run test`
+- Accessibility and visual checks where Mantine components are extended.
+
+---
+
+## Reference IDs & Context
+
+- context7 library lookups:
+  - Vite – [ID / notes]
+  - React – [ID / notes]
+  - TypeScript – [ID / notes]
+  - Mantine – [ID / notes]
+  - React Router – [ID / notes]
+  - Zustand / Redux Toolkit – [ID / notes]
+- Related ADRs or decision records: [:]
+- Additional documentation pointers: [:]

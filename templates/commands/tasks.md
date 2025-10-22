@@ -1,11 +1,11 @@
 ---
-description: Сформировать tasks.md под архитектуру FSD + Vite + React + TypeScript + Mantine.
+description: Build or update tasks.md so execution follows the agreed phases.
 scripts:
   sh: scripts/bash/check-prerequisites.sh --json
   ps: scripts/powershell/check-prerequisites.ps1 -Json
 ---
 
-## Пользовательский ввод
+## Prompt
 
 ```text
 $ARGUMENTS
@@ -13,50 +13,54 @@ $ARGUMENTS
 
 ---
 
-## Алгоритм
+## Intent
 
-1. **Запусти `{SCRIPT}`** из корня репозитория. Извлеки `FEATURE_DIR`, `PLAN_PATH`, `SPEC_PATH`, список доступных документов. Если `plan.md` или `spec.md` отсутствуют — остановись и сообщи причину.
-
-2. **Загрузить артефакты**:
-   - `plan.md` — стек (Vite + React + TS + Mantine), FSD-структура, фазы;
-   - `spec.md` — пользовательские истории с приоритетами;
-   - при наличии: `research.md`, `data-model.md`, `contracts/`, `quickstart.md`.
-
-3. **Определить структуру FSD** по плану: какие слои (`app`, `processes`, `pages`, `widgets`, `features`, `entities`, `shared`) участвуют. Каждая задача должна указывать конкретный путь (например, `src/features/hero/ui/HeroSection.jsx`).
-
-4. **Сгруппировать задачи по фазам**:
-   - Фаза 1 — инициализация проекта (Vite, Tailwind, shadcn/ui).
-   - Фаза 2 — общая инфраструктура, обязательная перед историями.
-   - Фазы 3+ — по одной фазе на каждую пользовательскую историю (в порядке P1 → P2 → …).
-   - Последняя фаза — “Завершение и тестирование” (тесты только здесь, после завершения всех историй).
-
-5. **Правила составления задач**:
-   - Нумерация `T001`, `T002`, …; обязательно `[Story]` (`US1`, `US2`, …).
-   - `[P]` ставь только если задачи не конфликтуют по файлам.
-   - Не добавляй тестовые задачи внутри фаз историй (только в финальной фазе).
-   - Фиксируй зависимости (какие задачи блокируют другие).
-   - Любые отклонения от FSD или стека помечай и поясняй.
-
-6. **Сформировать tasks.md** по шаблону `templates/tasks-template.md`:
-   - заполни все разделы: фазы, зависимость, стратегия поставки;
-   - текст на русском языке;
-   - путь к каждому файлу указывай абсолютный относительно корня репо.
-
-7. **Проверить целостность**:
-   - все пользовательские истории покрыты задачами;
-   - есть явная финальная фаза с тестами и документацией;
-   - `NEEDS CLARIFICATION` из плана/спека отражены в выводе (если остались).
-
-8. **Отчёт**:
-   - путь к `tasks.md`;
-   - количество задач всего и по каждой истории;
-   - напоминание, что тесты (Vitest + RTL) выполняются после завершения функционала;
-   - наличие незакрытых вопросов.
+Translate the feature plan into actionable tasks that respect the FSD architecture and quality bars. Keep the Markdown simple so every agent (Claude, Codex, Roo Code, etc.) can read and update it.
 
 ---
 
-## Нельзя
+## Steps
 
-- Пропускать истории или объединять их в одну фазу.
-- Игнорировать ограничения по стеку (TypeScript strict, Mantine theme, отсутствие Tailwind).
-- Изменять файлы кроме `tasks.md`.
+1. **Gather inputs**  
+   - `{SCRIPT}` resolves `FEATURE_DIR`, `PLAN_PATH`, `SPEC_PATH`, plus supporting files (`research.md`, `data-model.md`, `contracts/`, `quickstart.md`).  
+   - Abort if the spec or plan is missing—generate them first.
+
+2. **Review plan phases**  
+   - Foundations, Composition, Release slices (P1, P2, P3...).  
+   - Extract DoD, CI requirements, and dependencies for each phase.
+
+3. **Draft task list**  
+   - Use the format `[ID] [P?] [Story] summary`.  
+   - Group tasks under stage headings.  
+   - Highlight follow-ups with `[P]` when they are optional or deferred.
+
+4. **Ensure completeness**  
+   - Every plan deliverable should map to at least one task.  
+   - Include verification work (tests, docs, checklists, ADRs).  
+   - Note who owns each task if known, or leave placeholders.
+
+5. **Cross-check with spec**  
+   - Confirm tasks cover all functional requirements and data contracts.  
+   - Flag mismatches or missing work as `NEEDS CLARIFICATION`.
+
+6. **Agent hand-off**  
+   - Provide clear progress markers (`- [ ]` / `- [x]`).  
+   - Mention next commands (e.g. `/speckit.implement`) once tasks are ready.  
+   - Run `update-agent-context` for the chosen assistant to sync shared notes.
+
+---
+
+## Output Structure
+
+```
+# Tasks: Checkout Flow
+
+## Stage 1. Foundations
+- [ ] T001 ...
+
+## Stage 2. Composition Layer
+- [ ] T010 ...
+
+## Verification & Documentation
+- [ ] T090 ...
+```

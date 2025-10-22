@@ -1,28 +1,29 @@
-# Чеклист [CHECKLIST TYPE]: [FEATURE NAME]
+# Checklist [CHECKLIST TYPE]: [FEATURE NAME]
 
-**Назначение**: [Кратко опиши цель проверки]  
-**Дата**: [DATE]  
-**Фича**: [Ссылка на `spec.md` или другой артефакт]
-
----
-
-## Категория 1 — [Название]
-
-- [ ] CHK001 …
-- [ ] CHK002 …
-- [ ] CHK003 …
-
-## Категория 2 — [Название]
-
-- [ ] CHK004 …
-- [ ] CHK005 …
-- [ ] CHK006 …
+**Purpose**: [Why this checklist exists]  
+**Date**: [DATE]  
+**Source**: [Link to `spec.md` or relevant document]
 
 ---
 
-## Комментарии
+## Section 1 – [Focus]
 
-- Помечай выполненные пункты `[x]`.
-- Добавляй пояснения прямо рядом с пунктами или внизу файла.
-- Привязывай элементы к пользовательским историям (`US1`, `US2`, …) или задачам (`T001`, …), если необходимо.
-- По завершении чеклист прикладывается к отчёту `/speckit.implement`.
+- [ ] CHK001 – [acceptance criteria or gate]
+- [ ] CHK002 – [acceptance criteria or gate]
+- [ ] CHK003 – [acceptance criteria or gate]
+
+## Section 2 – [Focus]
+
+- [ ] CHK004 – [acceptance criteria or gate]
+- [ ] CHK005 – [acceptance criteria or gate]
+- [ ] CHK006 – [acceptance criteria or gate]
+
+---
+
+## Usage Notes
+
+- Track status with `[x]` when the requirement is satisfied.
+- Keep links to supporting evidence close to each item (PRs, screenshots, test runs).
+- Tag scenarios that need sign-off from QA, UX, Security, or Release.
+- Feed `NEEDS CLARIFICATION` back into the specification or plan if new questions appear.
+- The Markdown format remains plain so any agent (Claude, Codex, Roo Code, etc.) can mirror or validate the checklist.
