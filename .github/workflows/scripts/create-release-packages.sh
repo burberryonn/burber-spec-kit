@@ -30,6 +30,46 @@ GENRELEASES_DIR=".genreleases"
 mkdir -p "$GENRELEASES_DIR"
 rm -rf "$GENRELEASES_DIR"/* || true
 
+to_windows_path() {
+  local input_path=$1
+  if command -v cygpath >/dev/null 2>&1; then
+    cygpath -w "$input_path"
+  elif command -v wslpath >/dev/null 2>&1; then
+    wslpath -w "$input_path"
+  else
+    echo "$input_path"
+  fi
+}
+
+create_zip_archive() {
+  local source_dir=$1
+  local dest_zip=$2
+
+  if command -v zip >/dev/null 2>&1; then
+    # shellcheck disable=SC2164
+    (
+      cd "$source_dir"
+      zip -r "$dest_zip" .
+    )
+  else
+    if { command -v cygpath >/dev/null 2>&1 || command -v wslpath >/dev/null 2>&1; } && { command -v pwsh >/dev/null 2>&1 || command -v pwsh.exe >/dev/null 2>&1; }; then
+      local pwsh_cmd
+      if command -v pwsh >/dev/null 2>&1; then
+        pwsh_cmd="pwsh"
+      else
+        pwsh_cmd="pwsh.exe"
+      fi
+      local win_source win_dest
+      win_source=$(to_windows_path "$source_dir")
+      win_dest=$(to_windows_path "$dest_zip")
+      "$pwsh_cmd" -NoLogo -NoProfile -Command "& { param([string]\$Source, [string]\$Destination); if (Test-Path -LiteralPath \$Destination) { Remove-Item -LiteralPath \$Destination -Force }; Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::CreateFromDirectory(\$Source, \$Destination) }" -Source "$win_source" -Destination "$win_dest"
+    else
+      echo "Error: neither 'zip' nor PowerShell/Compress-Archive available to create $dest_zip" >&2
+      exit 1
+    fi
+  fi
+}
+
 rewrite_paths() {
   sed -E \
     -e 's@(/?)memory/@.specify/memory/@g' \
@@ -180,7 +220,8 @@ build_variant() {
       mkdir -p "$base_dir/.amazonq/prompts"
       generate_commands q md "\$ARGUMENTS" "$base_dir/.amazonq/prompts" "$script" ;;
   esac
-  ( cd "$base_dir" && zip -r "../spec-kit-template-${agent}-${script}-${NEW_VERSION}.zip" . )
+  local zip_target="$PWD/$GENRELEASES_DIR/spec-kit-template-${agent}-${script}-${NEW_VERSION}.zip"
+  create_zip_archive "$base_dir" "$zip_target"
   echo "Created $GENRELEASES_DIR/spec-kit-template-${agent}-${script}-${NEW_VERSION}.zip"
 }
 
@@ -233,4 +274,3 @@ done
 
 echo "Archives in $GENRELEASES_DIR:"
 ls -1 "$GENRELEASES_DIR"/spec-kit-template-*-"${NEW_VERSION}".zip
-
